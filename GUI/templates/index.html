@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>B.Hive - ME310 Cell</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">B.<b>Hive</b></span>
+      <span class="brand-sub">ME310 Cell</span>
+    </div>
+    <div id="op-banner" class="op-banner idle">idle</div>
+    <button id="estop" class="estop">Stop All</button>
+  </header>
+
+  <main class="grid">
+    <!-- Live camera (spans both status + control rows) -->
+    <section class="panel area-camera" id="panel-camera">
+      <h2>Camera Live View</h2>
+      <div class="cam-frame">
+        <img id="camera" src="/api/camera/stream" alt="live camera" />
+      </div>
+    </section>
+
+    <!-- Robot status -->
+    <section class="panel area-robot-status" id="panel-robot-status">
+      <h2>Robot Status</h2>
+      <div class="status-line">
+        <span id="robot-state" class="pill">-</span>
+      </div>
+      <table class="kv">
+        <tbody>
+          <tr><th>Joints (deg)</th><td id="joints">-</td></tr>
+          <tr><th>TCP pos (m)</th><td id="tcp-pos">-</td></tr>
+          <tr><th>TCP rpy (deg)</th><td id="tcp-rpy">-</td></tr>
+          <tr><th>Gripper</th><td id="gripper">-</td></tr>
+          <tr><th>Floating</th><td id="floating-state">-</td></tr>
+          <tr><th>Wrench (N/Nm)</th><td id="wrench">-</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Machine status -->
+    <section class="panel area-machine-status" id="panel-machine-status">
+      <h2>Machine Status</h2>
+      <div class="status-line">
+        <span id="machine-state" class="pill">-</span>
+      </div>
+      <table class="kv">
+        <tbody>
+          <tr><th>X stage (mm)</th><td id="m-x">-</td></tr>
+          <tr><th>Z stage (mm)</th><td id="m-z">-</td></tr>
+          <tr><th>Rotary (deg)</th><td id="m-rot">-</td></tr>
+          <tr><th>Vise</th><td id="m-vise">-</td></tr>
+          <tr><th>Force (kg)</th><td id="m-force">-</td></tr>
+          <tr><th>Blade</th><td id="m-blade">-</td></tr>
+          <tr><th>State</th><td id="m-state">-</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Robot controls -->
+    <section class="panel area-robot-ctrl" id="panel-robot-control">
+      <h2>Robot Controls</h2>
+      <div class="row">
+        <select id="waypoint-select"></select>
+        <button class="btn primary" data-act="robot-move">Move to</button>
+      </div>
+      <h3>Jog (TCP)</h3>
+      <div class="row">
+        <span class="label">Step</span>
+        <input type="number" id="jog-mm" value="10" step="1" /><span class="label">mm</span>
+        <input type="number" id="jog-deg" value="5" step="1" /><span class="label">deg</span>
+      </div>
+      <div class="jog">
+        <span class="jog-axis">X</span>
+        <button class="btn" data-act="jog" data-axis="x" data-dir="-1">-</button>
+        <button class="btn" data-act="jog" data-axis="x" data-dir="1">+</button>
+        <span class="jog-axis">Y</span>
+        <button class="btn" data-act="jog" data-axis="y" data-dir="-1">-</button>
+        <button class="btn" data-act="jog" data-axis="y" data-dir="1">+</button>
+        <span class="jog-axis">Z</span>
+        <button class="btn" data-act="jog" data-axis="z" data-dir="-1">-</button>
+        <button class="btn" data-act="jog" data-axis="z" data-dir="1">+</button>
+        <span class="jog-axis">RX</span>
+        <button class="btn" data-act="jog" data-axis="rx" data-dir="-1">-</button>
+        <button class="btn" data-act="jog" data-axis="rx" data-dir="1">+</button>
+        <span class="jog-axis">RY</span>
+        <button class="btn" data-act="jog" data-axis="ry" data-dir="-1">-</button>
+        <button class="btn" data-act="jog" data-axis="ry" data-dir="1">+</button>
+        <span class="jog-axis">RZ</span>
+        <button class="btn" data-act="jog" data-axis="rz" data-dir="-1">-</button>
+        <button class="btn" data-act="jog" data-axis="rz" data-dir="1">+</button>
+      </div>
+      <h3>Actions</h3>
+      <div class="row">
+        <button class="btn" data-act="robot-home">Home</button>
+        <button class="btn" data-act="robot-zero-ft">Cali (Zero F/T)</button>
+        <button class="btn" data-act="robot-clear-fault">Clear Fault</button>
+      </div>
+      <div class="row">
+        <button class="btn" data-act="gripper-open">Gripper Open</button>
+        <button class="btn" data-act="gripper-close">Gripper Close</button>
+      </div>
+      <div class="row">
+        <span class="label">Float</span>
+        <button class="btn" data-act="float-cart-on">Cartesian On</button>
+        <button class="btn" data-act="float-joint-on">Joint On</button>
+        <button class="btn" data-act="float-off">Off (Hold)</button>
+      </div>
+    </section>
+
+    <!-- Machine controls (stage + vise + cutter) -->
+    <section class="panel area-machine-ctrl" id="panel-machine-control">
+      <h2>Machine Controls</h2>
+      <div class="row">
+        <button class="btn" data-act="machine-home">Home All</button>
+        <button class="btn" data-act="vise-close">Close Vise</button>
+        <button class="btn" data-act="vise-open">Open Vise</button>
+      </div>
+      <div class="row">
+        <input type="number" id="x-mm" placeholder="X mm" step="0.5" />
+        <button class="btn" data-act="move-x">Move X</button>
+        <input type="number" id="z-mm" placeholder="Z mm" step="0.5" />
+        <button class="btn" data-act="move-z">Move Z</button>
+      </div>
+      <div class="row">
+        <input type="number" id="rot-deg" placeholder="deg" step="1" />
+        <button class="btn" data-act="rotate">Rotate</button>
+      </div>
+      <h3>Ultrasonic Cutter</h3>
+      <div class="row">
+        <button class="btn" data-act="blade-on">Blade On</button>
+        <button class="btn" data-act="blade-off">Blade Off</button>
+        <button class="btn" data-act="machine-clear">Clear Faults</button>
+      </div>
+      <div class="row">
+        <input type="number" id="cut-z" placeholder="Z mm" step="0.5" />
+        <input type="number" id="cut-x" placeholder="X mm" step="0.5" />
+        <input type="number" id="cut-deg" placeholder="deg" step="1" />
+        <button class="btn danger" data-act="cut">Run Cut</button>
+      </div>
+    </section>
+
+    <!-- Recipe -->
+    <section class="panel area-recipe" id="panel-recipe">
+      <h2>Recipe</h2>
+      <div class="row">
+        <select id="recipe-select"></select>
+        <button class="btn" data-act="recipe-load">Load</button>
+        <span class="label">Speed</span>
+        <input type="range" id="speed" min="0.1" max="1.0" step="0.1" value="1.0" />
+        <span id="speed-val">1.0x</span>
+        <span class="label">Loops</span>
+        <input type="number" id="loops" value="1" min="1" style="width:4em" />
+      </div>
+      <div class="row">
+        <button class="btn primary" data-act="recipe-run">Run Full</button>
+        <button class="btn" data-act="recipe-step">Next Phase</button>
+        <button class="btn danger" data-act="recipe-stop">Stop</button>
+      </div>
+      <h3>Phases</h3>
+      <ol id="recipe-phases" class="phase-list"></ol>
+    </section>
+
+    <!-- Log -->
+    <section class="panel area-log" id="panel-log">
+      <h2>Log</h2>
+      <pre id="recipe-log"></pre>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
