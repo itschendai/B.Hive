@@ -63,3 +63,9 @@ python Simulation/greenpink_fast_element_sim.py --dry-run
 For the Arduino stage firmware, see `arduino/xz-stage-code-v2/`.
 
 For the GUI, see `GUI/` (a Flask app; `GUI/requirements.txt` notes its extra dependency).
+
+## Link to CAD File
+https://drive.google.com/file/d/1ispD2t-xV4rb8HptCbeA1ECtELsadWO5/view?usp=sharing
+
+
+
